@@ -1,0 +1,48 @@
+<div [class.loader-hidden]="!show">
+  <div class="loader-overlay">
+    <div style="margin-top: 100px;">
+      <!--<mat-progress-bar mode="indeterminate" *ngIf="show"></mat-progress-bar>-->
+      <mat-progress-spinner mode="indeterminate" style="margin:0 auto;"></mat-progress-spinner>
+<!--      <img src="../../../assets/loader.gif">-->
+    </div>
+  </div>
+</div>
+<p-growl [(value)]="msgs" [life]="3000" baseZIndex="2"></p-growl>
+<!--<div style="z-index: 12000" #confDlg id="confDlg">  [appendTo]="confDlg"-->
+<p-confirmDialog :key="appcfd" header="Confirmation" width="425" #cdyn baseZIndex="1"
+                 icon="ui-icon-alert" appendTo="body">
+  <p-footer>
+    <button type="button" pButton icon="fa-check" label="{{acceptLabel}}" (click)="cdyn.accept()"
+            style="background-color: darkcyan;color: white; width: 100px">
+    </button>
+    <button type="button" pButton icon="fa-close" label="{{rejectLabel}}" (click)="cdyn.reject()"
+            style="background-color: darkred;color: white; width: 100px">
+    </button>
+  </p-footer>
+</p-confirmDialog>
+
+<p-confirmDialog :key="appwnd" header="Delete Confirmation" width="425" #cdrm baseZIndex="1"
+                 icon="ui-icon-alert" appendTo="body">
+  <p-footer>
+    <button type="button" pButton icon="fa-close" label="Hapus" (click)="cdrm.accept()"
+            style="background-color: brown;color: white; width: 100px">
+    </button>
+    <button type="button" pButton icon="fa-angle-left" label="Batal" (click)="cdrm.reject()"
+            style="background-color: cadetblue;color: white; width: 100px">
+    </button>
+  </p-footer>
+</p-confirmDialog>
+
+<p-confirmDialog :key="appnof" header="Notification" width="425" #cdnf baseZIndex="1"
+                 icon="ui-icon-notice" appendTo="body">
+  <p-footer>
+    <button type="button" pButton icon="fa-check" label="OK" (click)="cdnf.accept()"
+            style="background-color: darkcyan;color: white; width: 100px">
+    </button>
+  </p-footer>
+</p-confirmDialog>
+<!--</div> (onHide)="hide()"-->
+<p-dialog [responsive]="true" modal="modal" baseZIndex="2"
+          [(visible)]="showdlg">
+  <p-messages [(value)]="mesgs" closable="false"></p-messages>
+</p-dialog>
