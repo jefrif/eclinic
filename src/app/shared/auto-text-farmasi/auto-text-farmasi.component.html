@@ -1,0 +1,21 @@
+<p-autoComplete inputId="acFa" [style]="{'width':'100%'}" dropdownMode="current"
+                [inputStyle]="{'width':'100%'}" scrollHeight="450px" dataKey="rowNo"
+                id="acFarmas" emptyMessage="farmasi tidak ditemukan"
+                field="nama" [size]="30" (completeMethod)="searchFarmasi($event)"
+                [ngModel]="selectedFarmasi" [suggestions]="listSuggestion"
+                placeholder="cari farmasi" [minLength]="1" (onBlur)="onLostFocusFrms($event)"
+                (onSelect)="onSelectFarmasi($event)">
+  <ng-template let-frms pTemplate="item">
+          <span style="line-height: 1em" [innerHTML]="frms.text | noSanitize"
+                *ngIf="frms.unit !== '->' && frms.unit !== '<-'">
+          </span>
+    <span style="line-height: 1em; margin: 0; font-weight: bold;color: teal;font-style: italic"
+          *ngIf="frms.unit === '<-'">
+              &nbsp;&nbsp;&lt;&lt;&nbsp;Lihat sebelumnya&nbsp;&lt;&lt;
+          </span>
+    <span style="line-height: 1em; margin: 0; font-weight: bold;color: dodgerblue;font-style: italic"
+          *ngIf="frms.unit === '->'">
+              &nbsp;&nbsp;&gt;&gt;&nbsp;Lihat berikutnya&nbsp;&gt;&gt;
+          </span>
+  </ng-template>
+</p-autoComplete>
