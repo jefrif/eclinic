@@ -1,0 +1,175 @@
+<p-dialog baseZIndex="1" [(visible)]="displayFormKonversiSatuan"
+          modal="modal" width="700"
+          (onHide)="HideForm()"
+          [responsive]="true">
+  <p-header>
+    Konversi Satuan
+  </p-header>
+  <form [formGroup] = "konversiSatuanForm">
+    <div class="ui-g">
+      <div class="ui-g-4">
+        <label>Nama Barang:</label>
+      </div>
+      <div class="ui-g-8">
+        <span>{{ labelInfo.farmasiNama }}</span>
+      </div>
+    </div>
+    <div class="ui-g">
+      <div class="ui-g-4">
+        <label>Harga Beli Satuan Max (Rp):</label>
+      </div>
+      <div class="ui-g-8">
+        <span>{{ labelInfo.hargaBeliSatMax | currencyRupiah: labelInfo.hargaBeliSatMax }}</span>
+      </div>
+    </div>
+<!--
+    <div class="ui-g">
+      <div class="ui-g-4">
+        <label>Satuan:</label>
+      </div>
+      <div class="ui-g-8">
+        <label>{{ labelInfo.unitBarangFarmasiNama }}</label>
+      </div>
+    </div>
+-->
+    <div class="ui-g">
+      <div class="ui-g-4">
+        <label>Stok (satuan):</label>
+      </div>
+      <div class="ui-g-8">
+        <span>{{ labelInfo.stokTotal }} ({{ labelInfo.unitBarangFarmasiNama }})</span>
+      </div>
+    </div>
+    <div class="ui-g">
+      &nbsp;
+    </div>
+    <div class="ui-g" style="font-weight: bold">
+      <div class="ui-g-3">
+        <label>Konversi:</label>
+      </div>
+      <div class="ui-g-5">
+        <label>Dari</label>
+      </div>
+      <div class="ui-g-4">
+        <label>Menjadi</label>
+      </div>
+    </div>
+    <div class="ui-g">
+      <div class="ui-g-3">
+        <label>Satuan:</label>
+      </div>
+      <div class="ui-g-4">
+        <span>{{ labelInfo.unitBarangFarmasiNama }}</span>
+      </div>
+      <div class="ui-g-1">
+        <i class="material-icons">arrow_forward</i>
+      </div>
+      <div class="ui-g-3">
+        <p-dropdown
+          [autoWidth]="false"
+          [style]="{'width':'100%'}"
+          [options]="listSatuan"
+          formControlName="satuan"
+          (onChange)="onChangeListSatuan($event)"
+          placeholder="Pilih Satuan"></p-dropdown>
+      </div>
+      <div class="ui-g-1" style="text-align: right">
+        <button pButton
+                type="button"
+                icon="ui-icon-add"
+                class="green-btn"
+                (click)="callFormSatuan()"
+                style="margin-bottom:10px;font-size:0.8em"></button>
+      </div>
+    </div>
+    <div class="ui-g">
+      <div class="ui-g-3">
+        <label>Kode:</label>
+      </div>
+      <div class="ui-g-4">
+        <span>{{ labelInfo.kode }}</span>
+      </div>
+      <div class="ui-g-1">
+<!--        <i class="material-icons">arrow_forward</i>-->
+        <i class="material-icons">arrow_forward</i>
+      </div>
+      <div class="ui-g-3">
+        <input type="text"
+               pInputText
+               class="ui-md-12"
+               formControlName="kode">
+      </div>
+    </div>
+    <div class="ui-g">
+      <div class="ui-g-3">
+        <label>Perbandingan Qty:</label>
+      </div>
+      <div class="ui-g-4">
+        <input type="text"
+               pInputText
+               class="ui-md-12"
+               formControlName="qtySatuan">
+      </div>
+      <div class="ui-g-1">
+        <i class="material-icons">arrow_forward</i>
+      </div>
+      <div class="ui-g-4">
+        <p-autoComplete
+          [style]="{'width':'100%'}"
+          [inputStyle]="{'width':'100%'}"
+          formControlName="qtySatuanValue"
+          (completeMethod)="hitungTotalKonversi()">
+        </p-autoComplete>
+      </div>
+    </div>
+    <div class="ui-g">
+      <div class="ui-g-3">
+        <label>Harga Satuan:</label>
+      </div>
+      <div class="ui-g-4"></div>
+      <div class="ui-g-1">
+        <i class="material-icons">arrow_forward</i>
+      </div>
+      <div class="ui-g-4">
+        <span *ngIf="labelInfo?.hargaSatuan > 0">Rp. {{ labelInfo.hargaSatuan | number:'1.2-2' }}</span>
+      </div>
+    </div>
+    <div class="ui-g">
+      <div class="ui-g-3">
+        <label>Qty yang dikonversi:</label>
+      </div>
+      <div class="ui-g-3">
+        <span>{{txtSpanCnvrtdQty}}</span>
+      </div>
+
+      <div class="ui-g-1">
+        <button pButton type="button" icon="ui-icon-edit" class="orange-btn"
+                style="font-size: 0.8em" (click)="onClickEditQty()">
+        </button>
+      </div>
+      <div class="ui-g-1">
+        <i class="material-icons">arrow_forward</i>
+      </div>
+      <div class="ui-g-4">
+        <span>{{ labelInfo.totalKonversi}}</span>
+      </div>
+    </div>
+    <!--<div class="ui-g">-->
+
+    <!--</div>-->
+  </form>
+  <p-footer>
+    <button pButton type="button" (click)="btnSimpan()"
+            [disabled]="!konversiSatuanForm.valid || !unitSatuanValid || convertedQty === 0"
+            icon="fa-check" label="OK" style="background-color: darkcyan;color: white; width: 100px">
+    </button>
+    <button pButton type="button" (click)="btnBatal()" icon="fa-close" label="Batal"
+            style="background-color: darkred;color: white; width: 100px"></button>
+  </p-footer>
+</p-dialog>
+<app-form-add-satuan-barang [display]="display" (saveEvent)="onSavedSatuan($event)"></app-form-add-satuan-barang>
+<div [class]="displayFormKonversiSatuan ? 'd-show' : 'd-hide'"></div>
+
+<app-dlg-stok-barang [inputState]="dlgStokBarangInpState"
+                     (okSelected)="onOkDlgStokBarang($event)">
+</app-dlg-stok-barang>
