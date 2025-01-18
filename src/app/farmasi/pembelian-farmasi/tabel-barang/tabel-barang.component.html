@@ -1,0 +1,68 @@
+<div [class]="divTableClass">
+  <p-dataTable [value]="listBarang" dataKey="rowIdx"
+               selectionMode="single" [totalRecords]="totalRows"
+               (onRowSelect)="onRowSelected($event)" [lazy]="true"
+               [paginator]="true" (onLazyLoad)="loadDataRows($event)"
+               [rows]="10" [responsive]="true" [selection]="barangSelected">
+    <p-column header="No" [style]="{'width': '50px'}">
+      <ng-template let-i="rowIndex" pTemplate="body">
+        {{i + 1}}
+      </ng-template>
+    </p-column>
+    <p-column field="farmasiNama" header="Nama Barang" [style]="{'overflow': 'hidden'}"></p-column>
+    <p-column field="kode" header="Kode" [style]="{'width': '8%'}"></p-column>
+    <p-column field="qtyOrder" header="Qty Order" [style]="{'text-align':'right', 'width': '5em'}"
+              *ngIf="orderIncluded">
+    </p-column>
+    <p-column field="qty" header="Qty" [style]="{'text-align':'right', 'width': '5em'}"></p-column>
+    <p-column field="satuan" header="Unit" [style]="{'width': '14%'}">
+<!--
+      <ng-template let-col let-unit="rowData" let-ri="rowIndex" pTemplate="body">
+        <span>{{ equateUnit(unit[col.field]) }}</span>
+      </ng-template>
+-->
+    </p-column>
+    <p-column field="hargaSatuan" header="Harga Beli Satuan (Rp)"
+              [style]="{'text-align':'right', 'width': '11%'}">
+      <ng-template let-col let-hargaSatuan="rowData" let-ri="rowIndex" pTemplate="body">
+        <span>{{ hargaSatuan[col.field] | currencyRupiah:hargaSatuan[col.field]}}</span>
+      </ng-template>
+    </p-column>
+    <p-column field="jumlah" header="Jumlah (Rp)"
+              [style]="{'text-align':'right', 'width': '12%'}">
+      <ng-template let-col let-jumlah="rowData" let-ri="rowIndex" pTemplate="body">
+        <span>{{ jumlah[col.field] | currencyRupiah:jumlah[col.field]}}</span>
+      </ng-template>
+    </p-column>
+    <p-column field="expired" header="Kadaluwarsa" [style]="{'width': '8em'}">
+      <ng-template let-col let-expired="rowData" let-ri="rowIndex" pTemplate="body">
+        <span>{{ expired[col.field] | date: 'dd MMM yyyy'}}</span>
+      </ng-template>
+    </p-column>
+  </p-dataTable>
+</div>
+<div class="ui-g-1 ui-md-1 ui-lg-1" *ngIf="!readOnly">
+  <button pButton
+          *ngIf="accessView.ins"
+          type="button"
+          icon="ui-icon-add"
+          class="green-btn"
+          (click)="formAddBarang()"
+          style="margin-bottom:10px;"></button>
+  <br/>
+  <button pButton
+          *ngIf="accessView.upd"
+          type="button"
+          icon="ui-icon-edit"
+          class="orange-btn"
+          (click)="formEditBarang()"
+          style="margin-bottom:10px;"></button>
+  <br/>
+  <button pButton
+          *ngIf="accessView.del"
+          type="button"
+          icon="ui-icon-close"
+          class="red-btn"
+          (click)="deleteBarang()"
+          style="margin-bottom:10px;"></button>
+</div>

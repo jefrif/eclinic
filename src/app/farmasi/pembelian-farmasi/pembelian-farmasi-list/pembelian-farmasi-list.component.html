@@ -1,0 +1,145 @@
+<div class="card">
+  <div class="ui-g">
+    <div class="ui-g-12 ui-lg-3" style="padding-top: 0">
+      <h3>{{title}}</h3>
+    </div>
+    <div class="ui-g-12 ui-lg-3" style="padding-top: 1.4em" *ngIf="gudangs == null">
+      <span>&nbsp;</span>
+    </div>
+    <div class="ui-g-12 ui-lg-1" style="padding-top: 1.4em" *ngIf="gudangs != null">
+      <label>Gudang:</label>&nbsp;&nbsp;
+    </div>
+    <div class="ui-g-12 ui-lg-2" style="padding-top: 1.3em" *ngIf="gudangs != null">
+      <p-dropdown [options]="gudangs" [ngModel]="seldGudangId" [style]="{'width':'100%'}"
+                  [autoWidth]="true" [ngModelOptions]="{standalone: true}" [disabled]="selcGudangDsbl"
+                  placeholder="- tidak pakai gudang -" (onChange)="onChangeGudangs($event)">
+      </p-dropdown>
+    </div>
+    <div class="ui-g-12 ui-lg-6">
+      <span>&nbsp;</span>
+    </div>
+  </div>
+
+  <div class="ui-g" style="margin-bottom: 1em">
+<!--
+    <div class="ui-g-6 ui-md-6 ui-sm-12">
+      <div class="ui-g form-group">
+        <div class="ui-g-4 ui-sm-12">
+          <label>Tanggal:</label>
+        </div>
+        <div class="ui-g-8 ui-sm-12">
+          <p-calendar
+            dateFormat="dd-mm-yy"
+            [ngModel]="tanggal"
+            (onSelect)="onSelectDate($event)"
+            [showIcon]="true"></p-calendar>
+        </div>
+      </div>
+    </div>
+-->
+
+    <div class="ui-g-12 ui-md-6 ui-lg-4">
+      <label>Dari tanggal:&nbsp;&nbsp;&nbsp;</label>
+      <p-calendar dateFormat="dd-mm-yy" [ngModel]="filterModel.dateFrom" required
+                  [showIcon]="true" #dateFrom [inputStyle]="{'width':'9em'}" utc="true"
+                  (onSelect)="onSelectDateFrom(dateFrom.value)" [maxDate]="filterModel.dateTo">
+      </p-calendar>
+      <!--<span style="display: inline-block; width: 30px"></span>-->
+    </div>
+
+    <div class="ui-g-12 ui-md-6 ui-lg-4">
+      <label>sampai tanggal:&nbsp;&nbsp;&nbsp;</label>
+      <p-calendar dateFormat="dd-mm-yy" [ngModel]="filterModel.dateTo" required
+                  [showIcon]="true" #dateTo [inputStyle]="{'width':'9em'}"
+                  (onSelect)="onSelectDateTo(dateTo.value)" utc="true"
+                  [minDate]="filterModel.dateFrom" [maxDate]="maxiDate">
+      </p-calendar>
+    </div>
+
+    <div class="ui-g-12 ui-md-12 ui-lg-4" style="text-align: right;overflow-x: hidden" *ngIf="purchaseByOrder">
+      <button pButton type="button" icon="ui-icon-check"
+              label="Pilih Order" (click)="onClickPilihOrder()" class="green-btn"
+              style="width: 120px">
+      </button>&nbsp;
+      <button pButton type="button" icon="ui-icon-arrow-back"
+              label="Kembali" (click)="onClickBack()" class="blue-grey-btn"
+              style="width: 120px">
+      </button>
+    </div>
+  </div>
+
+  <div class="ui-g">
+    <div class="ui-g-11 ui-md-11 ui-sm-11">
+      <p-dataTable [value]="listPembelian" selectionMode="single"
+                   (onRowSelect)="onRowSelected($event)"
+                   [responsive]="true">
+        <p-column header="No" [style]="{'width': '5%'}">
+          <ng-template let-i="rowIndex" pTemplate="body">
+            {{i + 1}}
+          </ng-template>
+        </p-column>
+        <p-column field="orderCreateTime" header="Waktu Order" [style]="{'width': '12em'}"
+                  *ngIf="jenis == 5">
+          <ng-template let-col let-rd="rowData" let-ri="rowIndex" pTemplate="body">
+            <span>{{ rd[col.field] | date: 'dd-MM-yyyy HH:mm:ss'}}</span>
+          </ng-template>
+        </p-column>
+        <p-column field="noFaktur" header="No. Faktur" *ngIf="jenis != 5"></p-column>
+        <p-column field="noOrder" header="No. Order" *ngIf="jenis != 4"
+                  [style]="{'overflow-x': 'hidden'}"></p-column>
+        <p-column field="jenis" header="Pembelian" *ngIf="jenis == 5"
+                  [style]="{'text-align':'center', 'width': '12em'}">
+          <ng-template let-col let-rd="rowData" let-ri="rowIndex" pTemplate="body">
+            <i class="material-icons" *ngIf="rd[col.field] == 0" style="font-size: 0.95em">check</i>
+            <span *ngIf="rd[col.field] != 0">&nbsp;</span>
+          </ng-template>
+        </p-column>
+        <p-column field="supplierFarmasi.nama" header="Supplier" *ngIf="jenis != 5"></p-column>
+        <p-column field="total" header="Total (Rp)" [style]="{'text-align':'right', 'width':'11%'}">
+          <ng-template let-col let-total="rowData" let-ri="rowIndex" pTemplate="body">
+            <span>{{ total[col.field] | currencyRupiah:total[col.field]}}</span>
+          </ng-template>
+        </p-column>
+        <p-column field="diskon" header="Diskon" *ngIf="jenis != 5"
+                  [style]="{'text-align':'right', 'width':'11%'}">
+        </p-column>
+        <p-column field="diskonType" header="Tipe Diskon" *ngIf="jenis != 5"
+                  [style]="{'text-align':'center', 'width':'11%'}">
+          <ng-template let-col let-diskonType="rowData" let-ri="rowIndex" pTemplate="body">
+            <span>{{ equateDiskonType(diskonType[col.field]) }}</span>
+          </ng-template>
+        </p-column>
+        <p-column field="ongkir" header="Ongkir (Rp)" *ngIf="jenis != 5"
+                  [style]="{'text-align':'right', 'width':'11%'}">
+          <ng-template let-col let-ongkir="rowData" let-ri="rowIndex" pTemplate="body">
+            <span>{{ ongkir[col.field] | currencyRupiah:ongkir[col.field]}}</span>
+          </ng-template>
+        </p-column>
+        <p-column field="netTotal" header="Net Total (Rp)" *ngIf="jenis != 5"
+                  [style]="{'text-align':'right', 'width':'11%'}">
+          <ng-template let-col let-netTotal="rowData" let-ri="rowIndex" pTemplate="body">
+            <span>{{ netTotal[col.field] | currencyRupiah:netTotal[col.field]}}</span>
+          </ng-template>
+        </p-column>
+      </p-dataTable>
+    </div>
+    <div class="ui-g-1 ui-md-1 ui-sm-1">
+      <button pButton *ngIf="canAdd && !purchaseByOrder"
+              type="button"
+              icon="ui-icon-add"
+              class="green-btn"
+              (click)="createPembelian()"
+              style="margin-bottom:6px;"></button>
+      <br/>
+      <button pButton type="button" *ngIf="canEdit && !purchaseByOrder"
+              icon="ui-icon-edit" style="margin-bottom:6px;"
+              (click)="toPembelianFarmasi(false)">
+      </button>
+      <br/>
+      <button pButton type="button" *ngIf="canEdit && !purchaseByOrder && jenis == 5"
+              icon="ui-icon-close" class="red-btn"
+              (click)="deletePembelian()">
+      </button>
+    </div>
+  </div>
+</div>

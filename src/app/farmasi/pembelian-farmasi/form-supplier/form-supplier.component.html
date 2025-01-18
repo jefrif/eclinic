@@ -1,0 +1,59 @@
+<!--<p-growl [value]="msgs" [life]="2000"></p-growl>-->
+<p-dialog header="Tambah Supplier" baseZIndex="1"
+          [(visible)]="displayFormSupplier"
+          modal="modal" width="500"
+          (onHide)="ClearForm(FSupplier)"
+          [responsive]="true">
+  <form #FSupplier="ngForm">
+    <div class="ui-g form-group">
+      <div class="ui-g-4 ui-md-4 ui-sm-12">
+        <label>Nama:</label>
+      </div>
+      <div class="ui-g-8 ui-md-8 ui-sm-10">
+        <input pInputText
+               type="text"
+               class="ui-g-12 ui-md-12 ui-sm-12"
+               #nama
+               required
+               name="nama" [ngModel]="name">
+      </div>
+    </div>
+    <div class="ui-g form-group">
+      <div class="ui-g-4 ui-md-4 ui-sm-12">
+        <label>Alamat:</label>
+      </div>
+      <div class="ui-g-8 ui-md-8 ui-sm-10">
+        <input pInputText
+               type="text"
+               class="ui-g-12 ui-md-12 ui-sm-12"
+               #alamat
+               required
+               name="alamat" ngModel>
+      </div>
+    </div>
+    <div class="ui-g form-group">
+      <div class="ui-g-4 ui-md-4 ui-sm-12">
+        <label>Telp:</label>
+      </div>
+      <div class="ui-g-8 ui-md-8 ui-sm-10">
+        <input pInputText
+               type="text"
+               class="ui-g-12 ui-md-12 ui-sm-12"
+               #telepon
+               required
+               name="telepon" ngModel>
+      </div>
+    </div>
+    <div class="ui-g form-group">
+      <div class="ui-g-12 ui-md-12 ui-sm-12" style="text-align: right">
+        <button type="button"
+                pButton
+                icon="ui-icon-save"
+                [disabled]="!FSupplier.valid"
+                (click)="simpanSupplier(FSupplier)"
+                label="Simpan"></button>
+      </div>
+    </div>
+  </form>
+</p-dialog>
+<!--<div [class]="displayFormSupplier ? 'd-show' : 'd-hide'"></div>-->

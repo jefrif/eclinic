@@ -1,0 +1,234 @@
+<div class="card">
+  <form #FSupplier="ngForm">
+    <div class="ui-g">
+      <div class="ui-g-12 ui-lg-3" style="padding-top: 0">
+        <h3>{{formTitle}}</h3>
+      </div>
+      <div class="ui-g-12 ui-lg-3" style="padding-top: 1.4em" *ngIf="gudangs == null">
+        <span>&nbsp;</span>
+      </div>
+      <div class="ui-g-12 ui-lg-1" style="padding-top: 1.4em" *ngIf="gudangs != null">
+        <label>Gudang:</label>&nbsp;&nbsp;
+      </div>
+      <div class="ui-g-12 ui-lg-2" style="padding-top: 1.3em" *ngIf="gudangs != null">
+        <p-dropdown [options]="gudangs" [ngModel]="seldGudangId" [style]="{'width':'100%'}"
+                    [autoWidth]="true" [ngModelOptions]="{standalone: true}" [disabled]="selcGudangDsbl"
+                    placeholder="- tidak pakai gudang -" (onChange)="onChangeGudangs($event)">
+        </p-dropdown>
+      </div>
+<!--
+(onChange)="onChangeUsersNames($event, rd)"
+-->
+      <div class="ui-g-12 ui-lg-6" style="text-align: right;" *ngIf="!fieldModified && jenis != 1">
+        <button pButton type="button" icon="ui-icon-arrow-forward" *ngIf="purchaseByOrder"
+                label="Proses Pembelian" (click)="onClickPurchase()"
+                style="width:14em;margin-top: 0.5em">
+        </button>&nbsp;
+        <button pButton type="button" icon="ui-icon-arrow-back"
+                label="Kembali" (click)="onClickBack()" class="blue-grey-btn"
+                style="width:10em;margin-top: 0.5em">
+        </button>
+      </div>
+      <div class="ui-g-12 ui-lg-6" style="text-align: right;" *ngIf="fieldModified">
+        <button pButton
+                type="button"
+                label="Simpan"
+                icon="ui-icon-save"
+                style="width:10em;margin-top: 0.5em"
+                (click)="Simpan(FSupplier)"></button>
+        <button pButton
+                type="button"
+                label="Batal"
+                icon="ui-icon-clear"
+                (click)="btnBatal()"
+                style="width:10em;margin-top: 0.5em"
+                class="red-btn"></button>
+      </div>
+    </div>
+
+    <div class="ui-g form-group ui-g-nopad">
+      <!--<div class="ui-g-12 ui-md-12 ui-sm-12">-->
+      <!--<div class="ui-g-6 ui-md-6 ui-sm-12">-->
+      <div class="ui-g-6 ui-sm-12">
+        <div class="ui-g-4 ui-sm-12">
+          <label>Tanggal:</label>
+        </div>
+        <div class="ui-g-8 ui-sm-12">
+          <p-calendar [maxDate]="tanggalMax"
+                  class="ui-md-12 ui-sm-12"
+                  dateFormat="dd-mm-yy"
+                  name="tanggal" #tgl
+                  [ngModel]="tanggal"
+                  required (onSelect)="onSelectDate(tgl.value)"
+                  [showIcon]="true"></p-calendar>
+        </div>
+
+        <div class="ui-g-nopad" *ngIf="jenis != 1 && jenis != 5 || purchaseByOrder">
+          <div class="ui-g-4 ui-sm-12">
+            <label>Nama Supplier:</label>
+          </div>
+          <div class="ui-g-6 ui-sm-12">
+            <p-autoComplete [style]="{'width':'100%'}"
+                            [inputStyle]="{'width':'100%'}"
+                            id="acSimple"
+                            name="supplier"
+                            field="nama"
+                            [size]="30"
+                            required
+                            [(ngModel)]="supplierSelected"
+                            [suggestions]="supplierFiltered"
+                            (completeMethod)="SearchSupplier($event)"
+                            placeholder="Masukan Nama Supplier"
+                            (onSelect)="onSelectSupplier($event)"
+                            [minLength]="1">
+<!--
+                            ngModel
+              <ng-template let-supplierList pTemplate="item">
+                {{ supplierList.nama }}
+              </ng-template>
+-->
+            </p-autoComplete>
+          </div>
+          <div class="ui-g-1 ui-sm-12" style="text-align: right">
+            <button pButton
+                    *ngIf="accessView.ins"
+                    type="button"
+                    icon="ui-icon-add"
+                    class="green-btn"
+                    (click)="formSupplier()"
+                    style="font-size:0.8em">
+            </button>
+          </div>
+          <div class="ui-g-1 ui-sm-12">&nbsp;</div>
+
+          <div class="ui-g-4 ui-sm-12">
+            <label>Total Pembelian (Rp):</label>
+          </div>
+          <div class="ui-g-6 ui-sm-12">
+            <input type="text"
+                   pInputText
+                   currencyMask
+                   required
+                   [readonly]="true"
+                   [options]="{ prefix: '', thousands: '.', decimal: ',' }"
+                   class="ui-md-12"
+                   name="totalPembelian"
+                   [ngModel]="totalJumlah">
+          </div>
+          <div class="ui-g-2 ui-sm-12">&nbsp;</div>
+
+          <div class="ui-g-4 ui-sm-12">
+            <label>Diskon:</label>
+          </div>
+          <div class="ui-g-4 ui-sm-12">
+            <input type="number"
+                   pInputText
+                   required
+                   style="text-align: right"
+                   class="ui-md-12"
+                   [formControl]="fcDiskon"/>
+          </div>
+          <div class="ui-g-2 ui-sm-12">
+            <p-dropdown [options]="optDiskonType" required name="diskonType" [(ngModel)]="diskonType"
+                        (onChange)="onChangeDiskonType(FSupplier)" [autoWidth]="false"
+                        [style]="{'width':'100%'}">
+            </p-dropdown>
+          </div>
+          <div class="ui-g-2 ui-sm-12">&nbsp;</div>
+        </div>
+      </div>
+
+      <div class="ui-g-6 ui-sm-12">
+        <div class="ui-g-nopad" *ngIf="jenis == 5 || orderIncluded">
+          <div class="ui-g-4 ui-sm-12">
+            <label>No Order:</label>
+          </div>
+          <div class="ui-g-6 ui-sm-12">
+            <span>{{faktur.noOrder}}</span>
+          </div>
+          <div class="ui-g-2 ui-sm-12">&nbsp;</div>
+        </div>
+
+        <div class="ui-g-nopad" *ngIf="jenis != 1 && jenis != 5 || purchaseByOrder">
+          <div class="ui-g-4 ui-sm-12">
+            <label>No Faktur:</label>
+          </div>
+          <div class="ui-g-6 ui-sm-12">
+            <input type="text" (keyup)="onKeyup($event, 1)"
+                   pInputText
+                   required
+                   class="ui-md-12"
+                   name="noFaktur"
+                   [ngModel]="faktur.noFaktur">
+          </div>
+          <div class="ui-g-2 ui-sm-12">&nbsp;</div>
+
+          <div class="ui-g-4 ui-sm-12">
+            <label>Alamat Supplier:</label>
+          </div>
+          <div class="ui-g-6 ui-sm-12">
+            <input type="text" [readonly]="true"
+                   pInputText
+                   class="ui-md-12"
+                   required
+                   name="alamatSupplier"
+                   [ngModel]="supplierSelected.alamat">
+          </div>
+          <div class="ui-g-2 ui-sm-12">&nbsp;</div>
+          <div class="ui-g-4 ui-sm-12" *ngIf="showListKlinik">
+            <label>Pilih Klinik:</label>
+          </div>
+          <div class="ui-g-6 ui-sm-12" *ngIf="showListKlinik">
+            <p-dropdown
+                    [autoWidth]="false"
+                    [style]="{'width':'100%'}"
+                    [options]="listKlinik"
+                    (onChange)="setSelectedKlinik($event)"
+                    placeholder="Pilih Klinik"></p-dropdown>
+          </div>
+          <div class="ui-g-2 ui-sm-12" *ngIf="showListKlinik">&nbsp;</div>
+
+          <div class="ui-g-4 ui-sm-12">
+            <label>Ongkir (Rp):</label>
+          </div>
+          <div class="ui-g-6 ui-sm-12">
+            <input type="text"
+                   pInputText
+                   currencyMask
+                   required
+                   [options]="{ prefix: '', thousands: '.', decimal: ',' }"
+                   class="ui-md-12"
+                   name="ongkir"
+                   [formControl]="fOngkir">
+            <!--                   (ngModelChange)="hitTon(this)"
+                               [(ngModel)]="ongkir" -->
+          </div>
+          <div class="ui-g-2 ui-sm-12">&nbsp;</div>
+        </div>
+
+        <div class="ui-g-4 ui-sm-12">
+          <label>Total Net (Rp):</label>
+        </div>
+        <div class="ui-g-6 ui-sm-12">
+          <input type="text"
+                 pInputText
+                 currencyMask
+                 [readonly]="true"
+                 required
+                 [options]="{ prefix: '', thousands: '.', decimal: ',' }"
+                 class="ui-md-12"
+                 name="totalnet"
+                 [ngModel]="totalNet">
+        </div>
+        <div class="ui-g-2 ui-sm-12">&nbsp;</div>
+      </div>
+    </div>
+
+    <div class="ui-g">
+      <app-tabel-barang [compState]="faktur" (rowsChanged)="tableRowsChanged($event)"></app-tabel-barang>
+    </div>
+
+  </form>
+</div>
+<app-form-add-barang></app-form-add-barang>
+<app-form-supplier></app-form-supplier>

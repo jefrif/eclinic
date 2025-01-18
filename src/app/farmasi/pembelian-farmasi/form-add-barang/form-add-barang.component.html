@@ -1,0 +1,155 @@
+<p-dialog header="{{title}}" baseZIndex="0" [autoZIndex]="false"
+          [(visible)]="displayFormBarang" [style]="{'z-index': '1000'}"
+          modal="modal" width="500"
+          (onHide)="ClearForm(Fbarang)"
+          [responsive]="true">
+  <form #Fbarang="ngForm">
+    <div id="clickElmt"></div>
+    <div class="ui-g-12 ui-md-6 ui-lg-4">
+      <label>Nama:</label>
+    </div>
+    <div class="ui-g-12 ui-md-6 ui-lg-8">
+      <p-autoComplete inputId="nmFa" [style]="{'width':'100%'}" (onKeyUp)="onKeyupFarmasi($event)"
+                      [inputStyle]="{'width':'100%'}" scrollHeight="300px"
+                      id="acSimple" delay="500" emptyMessage="Tidak ditemukan"
+                      ngModel name="namaBarang" field="nama"
+                      [size]="30" (completeMethod)="SearchFarmasi($event)"
+                      [ngModel]="farmasi" [suggestions]="farmasiFiltered"
+                      placeholder="Masukan nama barang" [minLength]="1"
+                      (onSelect)="OnSelectFarmasi($event)">
+        <ng-template let-farmsElmt pTemplate="item">
+          <span *ngIf="farmsElmt.id > 0" [innerHTML]="farmsElmt.text | noSanitize"></span>
+          <span *ngIf="farmsElmt.id < 0"
+                style="font-style: italic;color: teal;">&lt;&lt; lihat sebelumnya &lt;&lt;
+            </span>
+          <span *ngIf="farmsElmt.id === 0"
+                style="font-style: italic;color: teal;">&gt;&gt; lihat berikutnya &gt;&gt;
+            </span>
+        </ng-template>
+      </p-autoComplete>
+      <!--
+              <button (click)="clickNext()">next</button>
+
+      -->
+    </div>
+
+    <div class="ui-g-12 ui-md-6 ui-lg-4">
+      <label>Satuan:</label>
+    </div>
+    <div class="ui-g-12 ui-md-6 ui-lg-8">
+      <p-autoComplete inputId="unFa" [style]="{'width':'100%'}" [dropdown]="true"
+                      [inputStyle]="{'width':'100%'}" scrollHeight="400px"
+                      id="acUnFas" delay="200" emptyMessage="Tidak ditemukan (satuan baru?)"
+                      placeholder="Masukan nama satuan" [minLength]="1"
+                      ngModel name="namaSatuan" field="nama"
+                      [size]="30" (completeMethod)="searchSatuan($event)"
+                      [ngModel]="satuan" [suggestions]="suggestedSatuan"
+                      (onSelect)="onSelectedSatuan($event)" (onKeyUp)="onKeyupSatuan($event)"
+                      (onDropdownClick)="onDropdownClick($event)"
+                      (onBlur)="onLostFocusSatuan($event)" (onFocus)="onGetFocusSatuan($event)">
+        <ng-template let-unitElmt pTemplate="item">
+          <span [innerHTML]="unitElmt.texts | noSanitize"></span>
+        </ng-template>
+      </p-autoComplete>
+    </div>
+<!--
+    <div class="ui-g-12 ui-md-6 ui-lg-4">
+      <label>Unit:</label>
+    </div>
+    <div class="ui-g-10 ui-md-4 ui-lg-6">
+      <p-dropdown [options]="listUnit" inputId="stFa"
+                  filter="filter"
+                  name="unit"
+                  #unit
+                  required
+                  [(ngModel)]="unitBarangId"
+                  (onChange)="getFarmasiKlinik()"
+                  [autoWidth]="false"
+                  placeholder="Pilih Unit"
+                  [style]="{'width':'100%'}"></p-dropdown>
+    </div>
+    <div class="ui-g-2 ui-md-2 ui-lg-2" style="text-align: right">
+      <button pButton
+              *ngIf="accessView.ins"
+              type="button"
+              icon="ui-icon-add"
+              class="green-btn"
+              (click)="btnShowFormSatuan()"
+              style="margin-bottom:10px;font-size:0.8em"></button>
+    </div>
+-->
+
+    <div class="ui-g-12 ui-md-6 ui-lg-4" *ngIf="mode === 0">
+      <label>Kedaluwarsa:</label>
+    </div>
+    <div class="ui-g-12 ui-md-6 ui-lg-8" *ngIf="mode === 0">
+      <p-calendar inputId="tglExp"
+              dateFormat="dd-mm-yy"
+              name="expired"
+              [ngModel]="expired"
+              required
+              [showIcon]="true"></p-calendar>
+    </div>
+    <div class="ui-g-12 ui-md-6 ui-lg-4">
+      <label>Kode:</label>
+    </div>
+    <div class="ui-g-12 ui-md-6 ui-lg-8">
+      <input pInputText
+             [readonly]="kodeIsReadOnly"
+             type="text"
+             name="kode"
+             [(ngModel)]="kodes"
+             #kode>
+    </div>
+    <div class="ui-g-12 ui-md-6 ui-lg-4">
+      <label style="color: firebrick">{{lblQtyOrder}}:</label>
+    </div>
+    <div class="ui-g-12 ui-md-6 ui-lg-8">
+      <input pInputText type="number"
+             required min="0" [ngModelOptions]="{standalone: true}"
+             (change)="onChangedQty($event)"
+             [(ngModel)]="qtys"
+             (ngModelChange)="HitungTotal($event)">
+    </div>
+<!--
+    id="qtyFm" (focus)="getFocusQty()" name="qty" #qty
+-->
+
+    <div class="ui-g-12 ui-md-6 ui-lg-4" *ngIf="mode === 0">
+      <label>Harga Beli Satuan:</label>
+    </div>
+    <div class="ui-g-12 ui-md-6 ui-lg-8" *ngIf="mode === 0">
+      <input type="text"
+             pInputText
+             currencyMask
+             [options]="{ prefix: '', thousands: '.', decimal: ',' }"
+             name="hargaBeliSatuan"
+             [(ngModel)]="hargaSatuans"
+             (ngModelChange)="HitungTotal()"
+             #hargaBeliSatuan>
+    </div>
+    <div class="ui-g-12 ui-md-6 ui-lg-4" *ngIf="mode === 0">
+      <label>Total:</label>
+    </div>
+    <div class="ui-g-12 ui-md-6 ui-lg-8" *ngIf="mode === 0">
+      <input type="text" [readonly]="true"
+             pInputText
+             currencyMask
+             [options]="{ prefix: '', thousands: '.', decimal: ',' }"
+             name="jumlah"
+             [(ngModel)]="totals"
+             #total>
+    </div>
+    <div class="ui-g-12 ui-md-12 ui-lg-12">&nbsp;
+    </div>
+    <div class="ui-g-12 ui-md-12 ui-lg-12" style="text-align: right">
+      <button type="button"
+              pButton style="width:8em;"
+              icon="ui-icon-check"
+              [disabled]="!Fbarang.valid"
+              (click)="simpanBarang(Fbarang)"
+              label="OK"></button>
+    </div>
+  </form>
+</p-dialog>
+<app-form-add-satuan [compState]="newSatuan" (saveClicked)="insertSatuan($event)"></app-form-add-satuan>
